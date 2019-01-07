@@ -113,6 +113,7 @@ public class CameraActivity extends AppCompatActivity {
                     if(outputStream != null){
                         outputStream.close();
                         Log.d("Fotos", "Foto salva");
+                        count++;
                         camera.startPreview();
                     }
                 }catch (Exception e){
