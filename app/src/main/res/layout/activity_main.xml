@@ -47,7 +47,9 @@
             android:ems="10"
             android:hint="Data de Nascimento"
             android:inputType="date"
-            android:textColorHint="@android:color/holo_red_dark" />
+            android:longClickable="false"
+            android:textColorHint="@android:color/holo_red_dark"
+            />
 
         <TextView
             android:id="@+id/textView2"

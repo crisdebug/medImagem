@@ -11,9 +11,11 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 
 
 /**
@@ -25,13 +27,12 @@ import java.io.ByteArrayOutputStream;
  * create an instance of this fragment.
  */
 public class EscolherFotoFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String IMAGEM = "imagem";
+    private static final String POSITION = "position";
 
-
-    // TODO: Rename and change types of parameters
-    private Bitmap imagemClicada;
+    private Foto imagemClicada;
+    private int position;
 
     private OnFragmentInteractionListener mListener;
 
@@ -46,14 +47,11 @@ public class EscolherFotoFragment extends Fragment {
 
      * @return A new instance of fragment EscolherFotoFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static EscolherFotoFragment newInstance(Bitmap imagemClicada) {
+    public static EscolherFotoFragment newInstance(Foto imagemClicada, int position) {
         EscolherFotoFragment fragment = new EscolherFotoFragment();
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        imagemClicada.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-        byte[] byteArray = stream.toByteArray();
         Bundle args = new Bundle();
-        args.putByteArray(IMAGEM, byteArray);
+        args.putSerializable(IMAGEM, imagemClicada);
+        args.putInt(POSITION, position);
         fragment.setArguments(args);
         return fragment;
     }
@@ -62,8 +60,8 @@ public class EscolherFotoFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            byte[] bytes = getArguments().getByteArray(IMAGEM);
-            imagemClicada = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            imagemClicada = (Foto) getArguments().getSerializable(IMAGEM);
+            position = getArguments().getInt(POSITION);
         }
     }
 
@@ -78,10 +76,23 @@ public class EscolherFotoFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ImageView foto = view.findViewById(R.id.imagem);
-        foto.setImageBitmap(imagemClicada);
-        mListener.onButtonPressed(imagemClicada);
+        Bitmap imagem = BitmapFactory.decodeFile(imagemClicada.getImagePath().getAbsolutePath());
+        foto.setImageBitmap(imagem);
+        Button negarBt = view.findViewById(R.id.nao);
+        Button aceitarBt = view.findViewById(R.id.sim);
+        negarBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onButtonPressed(false, position);
+            }
+        });
+        aceitarBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onButtonPressed(true, position);
+            }
+        });
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -112,6 +123,6 @@ public class EscolherFotoFragment extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onButtonPressed(Bitmap bitmap);
+        void onButtonPressed(boolean aceito, int position);
     }
 }

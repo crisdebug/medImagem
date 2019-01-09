@@ -16,14 +16,17 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 // TODO: Terminar tela das fotos
 
 public class FotosActivity extends AppCompatActivity implements FotosFragment.OnFragmentInteractionListener, EscolherFotoFragment.OnFragmentInteractionListener{
     private ArrayList<Bitmap> listaImagens;
+    private ArrayList<Foto> listaFotos;
     private ProgressBar loading;
-    private Bitmap imagemClicada;
+    private Foto imagemClicada;
+    private int posicaoClicada;
     private FotosFragment fotosFragment;
     private EscolherFotoFragment escolherFotoFragment;
     private FragmentTransaction fragmentTransaction;
@@ -33,6 +36,7 @@ public class FotosActivity extends AppCompatActivity implements FotosFragment.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fotos);
         loading = findViewById(R.id.loading);
+
         ImagensTask task = new ImagensTask();
         task.execute();
 
@@ -40,14 +44,15 @@ public class FotosActivity extends AppCompatActivity implements FotosFragment.On
     }
 
     @Override
-    public void onImageClicked(Bitmap bitmap) {
-        imagemClicada = bitmap;
+    public void onImageClicked(Foto foto, int position) {
+        imagemClicada = foto;
+        posicaoClicada = position;
         selectImage();
     }
 
     private void selectImage() {
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        escolherFotoFragment = EscolherFotoFragment.newInstance(imagemClicada);
+        escolherFotoFragment = EscolherFotoFragment.newInstance(imagemClicada, posicaoClicada);
         fragmentTransaction.add(R.id.placeholder, escolherFotoFragment);
         if (fotosFragment.isAdded()) {
             fragmentTransaction.hide(fotosFragment);
@@ -56,37 +61,45 @@ public class FotosActivity extends AppCompatActivity implements FotosFragment.On
     }
 
     @Override
-    public void onButtonPressed(Bitmap bitmap) {
+    public void onButtonPressed(boolean aceito, int posicaoClicada) {
+        fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fotosFragment.updateImagem(aceito, posicaoClicada);
+        if (escolherFotoFragment.isAdded()){
+            fragmentTransaction.remove(escolherFotoFragment);
+        }
+        fragmentTransaction.show(fotosFragment);
+        fragmentTransaction.commit();
 
     }
 
 
-    private class ImagensTask extends AsyncTask<Void, Void, List<Bitmap>>{
+    private class ImagensTask extends AsyncTask<Void, Void, ArrayList<Foto>>{
 
         @Override
-        protected List<Bitmap> doInBackground(Void... voids) {
-            ArrayList<Bitmap> lista = new ArrayList<>();
+        protected ArrayList<Foto> doInBackground(Void... voids) {
+            listaFotos = new ArrayList<>();
             File path = new File(Environment.getExternalStorageDirectory(), "MedImagem");
 
             File[] imagens = path.listFiles();
             for(int i = 0; i<imagens.length; i++){
                 if(imagens[i].isFile()){
-                    Bitmap myBitmap = BitmapFactory.decodeFile(imagens[i].getAbsolutePath());
-                    lista.add(myBitmap);
+                    Foto foto = new Foto();
+                    foto.setImagePath(imagens[i]);
+                    foto.setBeingUsed(false);
+                    listaFotos.add(foto);
                 }
             }
-            listaImagens = lista;
-            return lista;
+            return null;
         }
 
         @Override
-        protected void onPostExecute(List<Bitmap> bitmaps) {
+        protected void onPostExecute(ArrayList<Foto> fotos) {
             fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fotosFragment = FotosFragment.newInstance(listaImagens);
+            fotosFragment = FotosFragment.newInstance(listaFotos);
             fragmentTransaction.add(R.id.placeholder, fotosFragment);
             fragmentTransaction.commit();
             loading.setVisibility(View.GONE);
-            super.onPostExecute(bitmaps);
+            super.onPostExecute(fotos);
         }
     }
 }
