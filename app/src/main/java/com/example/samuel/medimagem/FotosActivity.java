@@ -1,5 +1,6 @@
 package com.example.samuel.medimagem;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -8,6 +9,9 @@ import android.os.Environment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -38,8 +42,34 @@ public class FotosActivity extends AppCompatActivity implements FotosFragment.On
         loading = findViewById(R.id.loading);
 
         ImagensTask task = new ImagensTask();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         task.execute();
 
+
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.fotos_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.laudo:
+                startActivity(new Intent(FotosActivity.this, LaudoActivity.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
 
     }
 

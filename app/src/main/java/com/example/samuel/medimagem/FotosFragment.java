@@ -65,6 +65,7 @@ public class FotosFragment extends Fragment {
             fotos = (ArrayList<Foto>) getArguments().getSerializable(IMAGES);
             adapter = new ImageAdapter(getActivity(), fotos);
         }
+        setHasOptionsMenu(true);
     }
 
 

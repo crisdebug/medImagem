@@ -13,4 +13,11 @@
 
     </android.support.v7.widget.RecyclerView>
 
+    <Button
+        android:id="@+id/salvar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/laudo_lista"
+        android:text="Salvar"/>
+
 </RelativeLayout>
