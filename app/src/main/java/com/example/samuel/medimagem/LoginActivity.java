@@ -1,0 +1,84 @@
+package com.example.samuel.medimagem;
+
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+public class LoginActivity extends AppCompatActivity implements TextWatcher {
+
+    private TextView erro_user;
+    private TextView erro_senha;
+    private EditText userED;
+    private EditText senhaED;
+    private boolean editedU = false;
+    private boolean editedS = false;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+
+        userED = findViewById(R.id.user_ed);
+        senhaED = findViewById(R.id.senha_ed);
+        Button loginB = findViewById(R.id.login_button);
+        erro_user = findViewById(R.id.erro_usuario);
+        erro_senha = findViewById(R.id.erro_senha);
+
+        userED.addTextChangedListener(this);
+        senhaED.addTextChangedListener(this);
+
+        loginB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String username = userED.getText().toString();
+                String senha = senhaED.getText().toString();
+
+                UsuarioDAO usuarioDAO = UsuarioDAO.getInstance(LoginActivity.this);
+                usuarioDAO.abrir();
+                int medicoID = usuarioDAO.authenticate(username, senha);
+                if (medicoID > 0){
+                    Intent intent = new Intent(LoginActivity.this, ExameActivity.class);
+                    intent.putExtra("medico_id", medicoID);
+                    startActivity(intent);
+                    finish();
+                }else if(medicoID == -1){
+                    erro_user.setVisibility(View.VISIBLE);
+                    editedU = true;
+
+                }else if (medicoID == -2){
+                    erro_senha.setVisibility(View.VISIBLE);
+                    editedS = true;
+                }
+                usuarioDAO.fechar();
+            }
+        });
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        if (editedU){
+            erro_user.setVisibility(View.GONE);
+            editedU = false;
+        }
+        if (editedS){
+            erro_senha.setVisibility(View.GONE);
+            editedS = false;
+        }
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
+    }
+}

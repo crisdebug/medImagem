@@ -7,7 +7,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class ExameAdapter extends BaseAdapter {
 
@@ -41,12 +43,13 @@ public class ExameAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
         if (view == null)
-            view = inflater.inflate(R.layout.item_exame, null);
-        TextView nome = view.findViewById(R.id.nome);
+            view = inflater.inflate(R.layout.item_exame, parent, false);
+        TextView nome = view.findViewById(R.id.nome_exame);
         TextView hora = view.findViewById(R.id.hora_exame);
         Exam exam = exames.get(position);
-        nome.setText(exam.getPaciente().getNome());
-        hora.setText(exam.getHora());
+        nome.setText(exam.getNomePaciente());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", new Locale("pt", "BR"));
+        hora.setText(dateFormat.format(exam.getHoraData().getTime()));
         return view;
     }
 }

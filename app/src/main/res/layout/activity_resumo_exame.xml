@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ResumoExameActivity">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="Nome do Paciente:"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"/>
+    <TextView
+        android:id="@+id/nome_paciente_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="32dp"
+        android:paddingStart="32dp"
+        android:text="AAAAA"
+        android:textSize="18sp"
+        android:paddingBottom="8dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:text="Data de Nascimento:"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"/>
+    <TextView
+        android:id="@+id/data_nascimento_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="32dp"
+        android:paddingTop="8dp"
+        android:text="12/12/2012"
+        android:textSize="18sp"
+        android:paddingBottom="8dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingTop="8dp"
+        android:text="Nome da Mãe:"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:paddingBottom="8dp"/>
+    <TextView
+        android:id="@+id/nome_mae_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:paddingLeft="32dp"
+        android:textSize="18sp"
+        android:text="AAAAA"
+        android:paddingBottom="8dp"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:textSize="18sp"
+        android:text="Data do Exame:"
+        android:textColor="@android:color/black"
+        android:paddingBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/data_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="32dp"
+        android:paddingTop="8dp"
+        android:textSize="18sp"
+        android:text="22/22/2222"
+        android:paddingBottom="8dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:textSize="18sp"
+        android:paddingTop="8dp"
+        android:text="Horário do Exame:"
+        android:textColor="@android:color/black"
+        android:paddingBottom="8dp"/>
+    <TextView
+        android:id="@+id/hora_exame_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="32dp"
+        android:paddingTop="8dp"
+        android:textSize="18sp"
+        android:text="22:22"
+        />
+
+
+</LinearLayout>

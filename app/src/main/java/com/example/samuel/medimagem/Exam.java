@@ -1,53 +1,77 @@
 package com.example.samuel.medimagem;
 
+import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
-public class Exam {
-    private Paciente paciente;
-    private String hora;
+public class Exam implements Serializable {
+    private long id;
+    private String nomePaciente;
+    private Date dataNascimento;
+    private String nomeMae;
+    private Date horaData;
+    private long medico;
 
-    public static ArrayList<Exam> createLista(){
-        ArrayList<Exam> exams = new ArrayList<>();
-        Exam A = new Exam();
-        Paciente pA = new Paciente();
-        pA.setNome("FULANO A");
-        pA.setNomeMae("FULANA A");
-        pA.setDataNascimento("12/12/12");
-        A.setPaciente(pA);
-        A.setHora("14:40");
-        Exam B = new Exam();
-        Paciente pB = new Paciente();
-        pB.setNome("FULANO B");
-        pB.setDataNascimento("12/12/12");
-        pB.setNomeMae("FULANA B");
-        B.setPaciente(pB);
-        B.setHora("15:40");
-        Exam C = new Exam();
-        Paciente pC = new Paciente();
-        pC.setNome("FULANO C");
-        pC.setNomeMae("FULANA C");
-        pC.setDataNascimento("12/12/12");
-        C.setPaciente(pC);
-        C.setHora("16:40");
-        exams.add(A);
-        exams.add(B);
-        exams.add(C);
-        return exams;
+    public long getMedico() {
+        return medico;
     }
 
-    public Paciente getPaciente() {
-        return paciente;
+    public void setMedico(long medico) {
+        this.medico = medico;
     }
 
-    public void setPaciente(Paciente paciente) {
-        this.paciente = paciente;
+    public long getId() {
+        return id;
     }
 
-    public String getHora() {
-        return hora;
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public void setHora(String hora) {
-        this.hora = hora;
+    public Date getDataNascimento(){
+        return this.dataNascimento;
+    }
+
+    public void setDataNascimento(String dataNascimento, String formato){
+        try {
+            DateFormat format = new SimpleDateFormat(formato, new Locale("pt", "BR"));
+            this.dataNascimento = format.parse(dataNascimento);
+        }catch (ParseException e){
+            e.printStackTrace();
+        }
+    }
+
+    public Date getHoraData(){
+        return this.horaData;
+    }
+
+    public void setHoraData(String horaData, String formato){
+        try{
+            DateFormat format = new SimpleDateFormat(formato, new Locale("pt", "BR"));
+            this.horaData = format.parse(horaData);
+        }catch (ParseException e){
+            e.printStackTrace();
+        }
+    }
+
+    public String getNomePaciente() {
+        return nomePaciente;
+    }
+
+    public void setNomePaciente(String nomePaciente) {
+        this.nomePaciente = nomePaciente;
+    }
+
+    public String getNomeMae() {
+        return nomeMae;
+    }
+
+    public void setNomeMae(String nomeMae) {
+        this.nomeMae = nomeMae;
     }
 }
+

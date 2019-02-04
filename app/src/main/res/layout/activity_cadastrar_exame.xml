@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".CadastrarExameActivity">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingLeft="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="8dp"
+            android:text="Nome do Paciente:"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/nome_paciente_ed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:hint="Nome do Paciente..."
+            android:inputType="textPersonName" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingLeft="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="8dp"
+            android:text="Data de Nascimento:"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/data_nascimento_ed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:clickable="true"
+            android:editable="false"
+            android:hint="Data de Nascimento..."
+            android:inputType="date" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingLeft="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="8dp"
+            android:text="Nome da Mãe:"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/nome_mae_ed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:hint="Nome da Mãe..."
+            android:inputType="textPersonName" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingLeft="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="8dp"
+            android:text="Data e Hora do Exame:"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/data_hora_ed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:clickable="true"
+            android:editable="false"
+            android:hint="Data e Hora do Exame..."
+            android:inputType="datetime" />
+
+        <Button
+            android:id="@+id/salvar_exame_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Salvar" />
+
+    </LinearLayout>
+</ScrollView>
