@@ -15,6 +15,15 @@ public class Exam implements Serializable {
     private String nomeMae;
     private Date horaData;
     private long medico;
+    private boolean feito;
+
+    public boolean isFeito() {
+        return feito;
+    }
+
+    public void setFeito(boolean feito) {
+        this.feito = feito;
+    }
 
     public long getMedico() {
         return medico;

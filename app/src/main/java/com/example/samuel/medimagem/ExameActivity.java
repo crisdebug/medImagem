@@ -4,45 +4,67 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toolbar;
 
 import java.util.ArrayList;
 
-public class ExameActivity extends AppCompatActivity {
+public class ExameActivity extends AppCompatActivity implements ExameAgendadosFragment.OnListFragmentInteractionListener{
 
-    private ListView lista_exame;
-    private FloatingActionButton fab;
+
+    private ViewPager viewPager;
     private int medico;
     private ArrayList<Exam> listaExames;
-    private ExameAdapter adapter;
+    ExamesPagerAdapter pagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exame);
-        lista_exame = findViewById(R.id.lista_exame);
-        fab = findViewById(R.id.add_paciente_fab);
+        getSupportActionBar().hide();
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        TabLayout tabLayout = findViewById(R.id.tab_layout);
+        tabLayout.addTab(tabLayout.newTab().setText("Agendados"));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
         medico = getIntent().getIntExtra("medico_id", 0);
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        final ViewPager viewPager = findViewById(R.id.exames_viewPager);
+        pagerAdapter = new ExamesPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount(), medico);
+        viewPager.setAdapter(pagerAdapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ExameActivity.this, CadastrarExameActivity.class);
-                intent.putExtra("medico_id", medico);
-                startActivity(intent);
+            public void onTabSelected(TabLayout.Tab tab) {
+
+
+                viewPager.setCurrentItem(tab.getPosition());
+
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
             }
         });
+
     }
 
     private void atualizarLista(){
-        ExameDAO exameDAO = ExameDAO.getInstance(this);
-        exameDAO.abrir();
-        listaExames = exameDAO.getExames(medico);
-        exameDAO.fechar();
+
     }
 
 
@@ -50,15 +72,13 @@ public class ExameActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         atualizarLista();
-        adapter = new ExameAdapter(this, listaExames);
-        lista_exame.setAdapter(adapter);
-        lista_exame.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(ExameActivity.this, ResumoExameActivity.class);
-                intent.putExtra("exame", listaExames.get(position));
-                startActivity(intent);
-            }
-        });
+
+
+    }
+
+    @Override
+    public void onListFragmentInteraction(int position) {
+        pagerAdapter.mudarFeito(position);
+
     }
 }
