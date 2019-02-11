@@ -114,9 +114,9 @@ public class CadastrarExameActivity extends AppCompatActivity {
                 boolean correct;
                 Exam exam = new Exam();
                 exam.setNomePaciente(nomePacienteED.getText().toString());
-                exam.setDataNascimento(dataNascimento, "dd/MM/yyyy");
+                exam.setDataNascimento(dataNascimentoED.getText().toString(), "dd/MM/yyyy");
                 exam.setNomeMae(nomeMaeED.getText().toString());
-                exam.setHoraData(dataHora, "dd/MM/yyyy - HH:mm");
+                exam.setHoraData(horaDataED.getText().toString(), "dd/MM/yyyy - HH:mm");
                 exam.setMedico(medico);
 
                 correct = nomePacienteED.getText().toString().equals("") ||

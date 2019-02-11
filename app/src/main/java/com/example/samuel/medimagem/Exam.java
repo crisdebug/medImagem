@@ -8,14 +8,33 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-public class Exam implements Serializable {
+public class Exam implements Serializable, BaseModel {
     private long id;
     private String nomePaciente;
     private Date dataNascimento;
     private String nomeMae;
     private Date horaData;
+    private int viewType;
+
+    public void setViewType(int viewType) {
+        this.viewType = viewType;
+    }
+
+    public void setHoraData(Date horaData) {
+        this.horaData = horaData;
+    }
+
     private long medico;
     private boolean feito;
+    private int type;
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
 
     public boolean isFeito() {
         return feito;
@@ -81,6 +100,12 @@ public class Exam implements Serializable {
 
     public void setNomeMae(String nomeMae) {
         this.nomeMae = nomeMae;
+    }
+
+
+    @Override
+    public int getItemViewType() {
+        return this.viewType;
     }
 }
 

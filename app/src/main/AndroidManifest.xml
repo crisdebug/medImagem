@@ -15,7 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ResumoExameActivity"></activity>
-        <activity android:name=".CadastrarExameActivity" />
+        <activity android:name=".CadastrarExameActivity"
+            android:parentActivityName=".ExameActivity"
+            android:label="Marcar Exame"/>
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

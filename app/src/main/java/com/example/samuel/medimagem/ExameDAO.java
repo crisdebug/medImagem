@@ -35,9 +35,9 @@ public class ExameDAO {
         this.database.close();
     }
 
-    public ArrayList<Exam> getExames(int medico){
+    public ArrayList<Exam> getExames(int medico, int feito){
         ArrayList<Exam> exams = new ArrayList<>();
-        Cursor cursor = database.query("Exames", null, "Medico = ?", new String[]{String.valueOf(medico)}, null, null, null);
+        Cursor cursor = database.query("Exames", null, "Medico = ? AND Feito = ?", new String[]{String.valueOf(medico), String.valueOf(feito)}, null, null, null);
         if(cursor.moveToFirst()){
             while (!cursor.isAfterLast()){
                 Exam exam = new Exam();
@@ -47,12 +47,15 @@ public class ExameDAO {
                 exam.setNomeMae(cursor.getString(cursor.getColumnIndex("NomeMae")));
                 exam.setHoraData(cursor.getString(cursor.getColumnIndex("DataHora")), "ddMMyyyy - HHmm");
                 exam.setMedico(cursor.getLong(cursor.getColumnIndex("Medico")));
+                exam.setFeito(cursor.getInt(cursor.getColumnIndex("Feito")) == 1);
+                exam.setType(0);
                 exams.add(exam);
                 cursor.moveToNext();
             }
         }
         return exams;
     }
+
 
     public boolean addExame(Exam exam){
         SimpleDateFormat dateFormatData = new SimpleDateFormat("ddMMyyy", new Locale("pt", "BR"));

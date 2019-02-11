@@ -9,6 +9,7 @@ public class ExamesPagerAdapter extends FragmentStatePagerAdapter {
     int tabsNum;
     int medicoID;
     ExameAgendadosFragment exameAgendadosFragment;
+    ExamesFeitoFragment examesFeitoFragment;
 
 
     public ExamesPagerAdapter(FragmentManager fm, int tabsNum, int medicoID) {
@@ -23,6 +24,11 @@ public class ExamesPagerAdapter extends FragmentStatePagerAdapter {
             case 0:
                 exameAgendadosFragment = ExameAgendadosFragment.newInstance(medicoID);
                 return exameAgendadosFragment;
+
+            case 1:
+                    examesFeitoFragment = ExamesFeitoFragment.newInstance(medicoID);
+                    return examesFeitoFragment;
+
             default:
                 return null;
         }
