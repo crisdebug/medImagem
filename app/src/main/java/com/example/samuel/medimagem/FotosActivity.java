@@ -1,5 +1,6 @@
 package com.example.samuel.medimagem;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,6 +10,7 @@ import android.os.Environment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -34,12 +36,18 @@ public class FotosActivity extends AppCompatActivity implements FotosFragment.On
     private FotosFragment fotosFragment;
     private EscolherFotoFragment escolherFotoFragment;
     private FragmentTransaction fragmentTransaction;
+    private int count;
+    private Exam exame;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fotos);
         loading = findViewById(R.id.loading);
+
+        count = getIntent().getIntExtra("count", 0);
+        exame = (Exam) getIntent().getSerializableExtra("exame");
+        listaFotos = (ArrayList<Foto>) getIntent().getSerializableExtra("fotos");
 
         ImagensTask task = new ImagensTask();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -50,8 +58,24 @@ public class FotosActivity extends AppCompatActivity implements FotosFragment.On
 
     @Override
     public boolean onSupportNavigateUp() {
+        Intent returningIntent = new Intent(FotosActivity.this, CameraActivity.class);
+        returningIntent.putExtra("count", count);
+        returningIntent.putExtra("exame", exame);
+        returningIntent.putExtra("fotos", listaFotos);
+        startActivity(returningIntent);
         finish();
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent returningIntent = new Intent(FotosActivity.this, CameraActivity.class);
+        returningIntent.putExtra("count", count);
+        returningIntent.putExtra("exame", exame);
+        returningIntent.putExtra("fotos", listaFotos);
+        startActivity(returningIntent);
+        finish();
     }
 
     @Override
@@ -94,6 +118,7 @@ public class FotosActivity extends AppCompatActivity implements FotosFragment.On
     public void onButtonPressed(boolean aceito, int posicaoClicada) {
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fotosFragment.updateImagem(aceito, posicaoClicada);
+        listaFotos.get(posicaoClicada).setBeingUsed(true);
         if (escolherFotoFragment.isAdded()){
             fragmentTransaction.remove(escolherFotoFragment);
         }
@@ -107,18 +132,27 @@ public class FotosActivity extends AppCompatActivity implements FotosFragment.On
 
         @Override
         protected ArrayList<Foto> doInBackground(Void... voids) {
-            listaFotos = new ArrayList<>();
-            File path = new File(Environment.getExternalStorageDirectory(), "MedImagem");
+                if (listaFotos == null) {
+                    listaFotos = new ArrayList<>();
+                    File medImagemDirectory = new File(Environment.getExternalStorageDirectory(), "MedImagem");
+                    File path = null;
+                    if (!medImagemDirectory.exists()) {
 
-            File[] imagens = path.listFiles();
-            for(int i = 0; i<imagens.length; i++){
-                if(imagens[i].isFile()){
-                    Foto foto = new Foto();
-                    foto.setImagePath(imagens[i]);
-                    foto.setBeingUsed(false);
-                    listaFotos.add(foto);
+                    } else {
+                        path = new File(medImagemDirectory, exame.getNomePaciente().toUpperCase() + exame.getId());
+
+                    }
+
+                    File[] imagens = path.listFiles();
+                    for (int i = 0; i < imagens.length; i++) {
+                        if (imagens[i].isFile()) {
+                            Foto foto = new Foto();
+                            foto.setImagePath(imagens[i]);
+                            foto.setBeingUsed(false);
+                            listaFotos.add(foto);
+                        }
+                    }
                 }
-            }
             return null;
         }
 

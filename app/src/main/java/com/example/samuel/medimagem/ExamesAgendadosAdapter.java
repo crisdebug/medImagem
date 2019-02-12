@@ -1,5 +1,7 @@
 package com.example.samuel.medimagem;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -19,13 +21,13 @@ public class ExamesAgendadosAdapter extends RecyclerView.Adapter<ExamesAgendados
 
     private ArrayList<Exam> exames;
     private ExameAgendadosFragment.OnExameAgendadoInteractionListener listener;
-    private static final int TYPE_ITEM = 0;
-    private static final int TYPE_HEADER = 1;
+
 
 
     public ExamesAgendadosAdapter (ArrayList<Exam> exames, ExameAgendadosFragment.OnExameAgendadoInteractionListener listener){
         this.exames = exames;
         this.listener = listener;
+
         Collections.sort(exames, new Comparator<Exam>() {
             @Override
             public int compare(Exam o1, Exam o2) {
@@ -51,12 +53,14 @@ public class ExamesAgendadosAdapter extends RecyclerView.Adapter<ExamesAgendados
         public BaseViewHolder(@NonNull View itemView) {
             super(itemView);
         }
+        public Exam exam;
 
         public abstract void bind(T exam);
     }
 
 
-    public static class ExameViewHolder extends BaseViewHolder<Exam>{
+    public  class ExameViewHolder extends BaseViewHolder<Exam>{
+        public Exam exam;
         public View view;
         public TextView nomePaciente;
         public TextView horaExame;
@@ -69,24 +73,26 @@ public class ExamesAgendadosAdapter extends RecyclerView.Adapter<ExamesAgendados
             horaExame = itemView.findViewById(R.id.hora_exame_agendado);
 
 
+
         }
 
         @Override
-        public void bind(Exam exam) {
+        public void bind(final Exam exam) {
             nomePaciente.setText(exam.getNomePaciente());
             SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm",  new Locale("pt", "BR"));
             horaExame.setText(dateFormat.format(exam.getHoraData().getTime()));
-
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    ExamesAgendadosAdapter.this.listener.onExameAgendadoInteraction(exam);
                 }
             });
+
         }
     }
 
     public static class HeaderViewHolder extends BaseViewHolder<Exam>{
+        public Exam exam;
 
         public TextView dataExame;
 
@@ -127,6 +133,7 @@ public class ExamesAgendadosAdapter extends RecyclerView.Adapter<ExamesAgendados
     public void onBindViewHolder(@NonNull BaseViewHolder viewHolder, final int i) {
 
         Exam exame = exames.get(i);
+        viewHolder.exam = exame;
         if (!exame.isFeito()){
             viewHolder.bind(exame);
         }

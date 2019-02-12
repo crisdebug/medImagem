@@ -78,7 +78,9 @@ public class ExameAgendadosFragment extends Fragment {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
             adapter = new ExamesAgendadosAdapter(listaExames, mListener);
+
             recyclerView.setAdapter(adapter);
+
         }
         return view;
     }
@@ -134,6 +136,6 @@ public class ExameAgendadosFragment extends Fragment {
      */
     public interface OnExameAgendadoInteractionListener {
         // TODO: Update argument type and name
-        void onExameAgendadoInteraction(int position);
+        void onExameAgendadoInteraction(Exam exam);
     }
 }

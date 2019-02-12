@@ -1,7 +1,11 @@
 package com.example.samuel.medimagem;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.hardware.Camera;
+import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.view.SurfaceView;
 import android.view.SurfaceHolder;
 
@@ -11,12 +15,15 @@ public class ImageSurfaceView extends SurfaceView implements SurfaceHolder.Callb
 
     private Camera camera;
     private SurfaceHolder surfaceHolder;
+    private Context context;
 
     public ImageSurfaceView(Context context, Camera camera){
         super(context);
+        this.context = context;
         this.camera = camera;
         this.surfaceHolder = getHolder();
         this.surfaceHolder.addCallback(this);
+        this.surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
 
     @Override
@@ -31,12 +38,12 @@ public class ImageSurfaceView extends SurfaceView implements SurfaceHolder.Callb
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
+        camera.setDisplayOrientation(90);
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        this.camera.stopPreview();
-        this.camera.release();
+
     }
+
 }
