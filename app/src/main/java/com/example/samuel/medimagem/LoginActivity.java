@@ -5,7 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -36,26 +38,19 @@ public class LoginActivity extends AppCompatActivity implements TextWatcher {
         loginB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String username = userED.getText().toString();
-                String senha = senhaED.getText().toString();
+                LoginActivity.this.login();
+            }
+        });
 
-                UsuarioDAO usuarioDAO = UsuarioDAO.getInstance(LoginActivity.this);
-                usuarioDAO.abrir();
-                int medicoID = usuarioDAO.authenticate(username, senha);
-                if (medicoID > 0){
-                    Intent intent = new Intent(LoginActivity.this, ExameActivity.class);
-                    intent.putExtra("medico_id", medicoID);
-                    startActivity(intent);
-                    finish();
-                }else if(medicoID == -1){
-                    erro_user.setVisibility(View.VISIBLE);
-                    editedU = true;
-
-                }else if (medicoID == -2){
-                    erro_senha.setVisibility(View.VISIBLE);
-                    editedS = true;
+        senhaED.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handled = false;
+                if (actionId == EditorInfo.IME_ACTION_SEND){
+                    LoginActivity.this.login();
+                    handled = true;
                 }
-                usuarioDAO.fechar();
+                return handled;
             }
         });
     }
@@ -80,5 +75,28 @@ public class LoginActivity extends AppCompatActivity implements TextWatcher {
     @Override
     public void afterTextChanged(Editable s) {
 
+    }
+
+    private void login(){
+        String username = userED.getText().toString();
+        String senha = senhaED.getText().toString();
+
+        UsuarioDAO usuarioDAO = UsuarioDAO.getInstance(LoginActivity.this);
+        usuarioDAO.abrir();
+        int medicoID = usuarioDAO.authenticate(username, senha);
+        if (medicoID > 0){
+            Intent intent = new Intent(LoginActivity.this, ExameActivity.class);
+            intent.putExtra("medico_id", medicoID);
+            startActivity(intent);
+            finish();
+        }else if(medicoID == -1){
+            erro_user.setVisibility(View.VISIBLE);
+            editedU = true;
+
+        }else if (medicoID == -2){
+            erro_senha.setVisibility(View.VISIBLE);
+            editedS = true;
+        }
+        usuarioDAO.fechar();
     }
 }
