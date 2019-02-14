@@ -1,6 +1,7 @@
 package com.example.samuel.medimagem;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -8,6 +9,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -39,8 +41,8 @@ public class ExameActivity extends AppCompatActivity implements ExameAgendadosFr
 
     @Override
     protected void onResume() {
-        super.onResume();
 
+        super.onResume();
     }
 
     @Override
@@ -48,6 +50,21 @@ public class ExameActivity extends AppCompatActivity implements ExameAgendadosFr
         Intent intent = new Intent(ExameActivity.this, ResumoExameActivity.class);
         intent.putExtra("exame", exam);
         startActivity(intent);
+    }
+
+    @Override
+    public void onExameAgendadoLongInteraction(final int position) {
+        String[] opcoes = {"Marcar como feito"};
+        new AlertDialog.Builder(this).setItems(opcoes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case 0:
+                        pagerAdapter.mudarFeito(position);
+                        break;
+                }
+            }
+        }).show();
     }
 
     @Override
@@ -77,9 +94,11 @@ public class ExameActivity extends AppCompatActivity implements ExameAgendadosFr
         });
 
         final ViewPager viewPager = findViewById(R.id.exames_viewPager);
-        pagerAdapter = new ExamesPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount(), medico);
+        pagerAdapter = new ExamesPagerAdapter(getSupportFragmentManager(), medico);
         viewPager.setAdapter(pagerAdapter);
+        viewPager.setSaveFromParentEnabled(false);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.setupWithViewPager(viewPager);
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -87,9 +106,11 @@ public class ExameActivity extends AppCompatActivity implements ExameAgendadosFr
                 viewPager.setCurrentItem(tab.getPosition());
                 if (tab.getPosition() == 1){
                     fabExame.hide();
+                    pagerAdapter.atualizarFeito();
                 }
                 if (tab.getPosition() == 0){
                     fabExame.show();
+                    pagerAdapter.atualizarAgendado();
                 }
 
             }
@@ -108,6 +129,8 @@ public class ExameActivity extends AppCompatActivity implements ExameAgendadosFr
 
 
     }
+
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

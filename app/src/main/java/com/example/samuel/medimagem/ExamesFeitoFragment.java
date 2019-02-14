@@ -1,6 +1,7 @@
 package com.example.samuel.medimagem;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -26,6 +27,8 @@ public class ExamesFeitoFragment extends Fragment {
     private int medico = 1;
     private ArrayList<Exam> listaExames;
     private OnExameFeitoInteractionListener mListener;
+    private RecyclerView recyclerView;
+    private ExamesFeitosAdapter adapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -52,10 +55,19 @@ public class ExamesFeitoFragment extends Fragment {
             medico = getArguments().getInt(ARG_MEDICO_ID);
         }
 
+        carregarExame();
+    }
+
+    private void carregarExame() {
         ExameDAO exameDAO = ExameDAO.getInstance(getActivity());
         exameDAO.abrir();
         listaExames = exameDAO.getExames(medico, 1);
         exameDAO.fechar();
+    }
+
+    public void atualizarLista(){
+        AtualizarListaTask task = new AtualizarListaTask();
+        task.execute();
     }
 
     @Override
@@ -66,7 +78,7 @@ public class ExamesFeitoFragment extends Fragment {
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+            recyclerView = (RecyclerView) view;
             if (medico <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
@@ -108,5 +120,21 @@ public class ExamesFeitoFragment extends Fragment {
     public interface OnExameFeitoInteractionListener {
         // TODO: Update argument type and name
         void onExameFeitoInteraction(Exam exame);
+    }
+
+    private class AtualizarListaTask extends AsyncTask<Void, Void, ArrayList<Exam>> {
+
+        @Override
+        protected ArrayList<Exam> doInBackground(Void... voids) {
+            ExamesFeitoFragment.this.carregarExame();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Exam> aVoid) {
+            adapter = new ExamesFeitosAdapter(listaExames, mListener);
+            recyclerView.setAdapter(adapter);
+            super.onPostExecute(aVoid);
+        }
     }
 }

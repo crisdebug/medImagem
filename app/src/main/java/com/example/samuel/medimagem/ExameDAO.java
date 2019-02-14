@@ -76,4 +76,10 @@ public class ExameDAO {
 
     }
 
+    public void atualizarFeito(Exam exam, boolean feito){
+        ContentValues values = new ContentValues();
+        values.put("Feito", feito ? "1" : "0");
+        database.update("Exames", values, "id = ?", new String[]{String.valueOf(exam.getId())});
+    }
+
 }

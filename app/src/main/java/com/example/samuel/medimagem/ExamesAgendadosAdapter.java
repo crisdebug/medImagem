@@ -88,6 +88,13 @@ public class ExamesAgendadosAdapter extends RecyclerView.Adapter<ExamesAgendados
                 }
             });
 
+            view.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    ExamesAgendadosAdapter.this.listener.onExameAgendadoLongInteraction(getAdapterPosition());
+                    return false;
+                }
+            });
         }
     }
 

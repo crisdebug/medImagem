@@ -1,6 +1,7 @@
 package com.example.samuel.medimagem;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -56,11 +57,21 @@ public class ExameAgendadosFragment extends Fragment {
             medico = getArguments().getInt("medico");
         }
 
+        carregarExame();
+
+        setRetainInstance(true);
+    }
+
+    private void carregarExame() {
         ExameDAO exameDAO = ExameDAO.getInstance(getActivity());
         exameDAO.abrir();
         listaExames = exameDAO.getExames(medico, 0);
         exameDAO.fechar();
+    }
 
+    public void atualizarLista(){
+        AtualizarListaTask task = new AtualizarListaTask();
+        task.execute();
     }
 
     @Override
@@ -82,6 +93,7 @@ public class ExameAgendadosFragment extends Fragment {
             recyclerView.setAdapter(adapter);
 
         }
+        Log.i("DEBUG", "view created");
         return view;
     }
 
@@ -117,6 +129,10 @@ public class ExameAgendadosFragment extends Fragment {
 
 
     public void mudarFeito(int position){
+        ExameDAO dao = ExameDAO.getInstance(getActivity());
+        dao.abrir();
+        dao.atualizarFeito(listaExames.get(position), true);
+        dao.fechar();
         listaExames.remove(position);
         recyclerView.removeViewAt(position);
         adapter.notifyItemRemoved(position);
@@ -137,5 +153,22 @@ public class ExameAgendadosFragment extends Fragment {
     public interface OnExameAgendadoInteractionListener {
         // TODO: Update argument type and name
         void onExameAgendadoInteraction(Exam exam);
+        void onExameAgendadoLongInteraction(int position);
+    }
+
+    private class AtualizarListaTask extends AsyncTask<Void, Void, ArrayList<Exam>>{
+
+        @Override
+        protected ArrayList<Exam> doInBackground(Void... voids) {
+            ExameAgendadosFragment.this.carregarExame();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Exam> aVoid) {
+            adapter = new ExamesAgendadosAdapter(listaExames, mListener);
+            recyclerView.setAdapter(adapter);
+            super.onPostExecute(aVoid);
+        }
     }
 }

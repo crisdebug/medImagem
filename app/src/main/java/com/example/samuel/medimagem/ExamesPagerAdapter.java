@@ -1,5 +1,7 @@
 package com.example.samuel.medimagem;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -12,9 +14,9 @@ public class ExamesPagerAdapter extends FragmentStatePagerAdapter {
     ExamesFeitoFragment examesFeitoFragment;
 
 
-    public ExamesPagerAdapter(FragmentManager fm, int tabsNum, int medicoID) {
+    public ExamesPagerAdapter(FragmentManager fm, int medicoID) {
         super(fm);
-        this.tabsNum = tabsNum;
+        this.tabsNum = 2;
         this.medicoID = medicoID;
     }
 
@@ -39,7 +41,28 @@ public class ExamesPagerAdapter extends FragmentStatePagerAdapter {
         return tabsNum;
     }
 
+    public void atualizarAgendado(){
+        exameAgendadosFragment.atualizarLista();
+    }
+
+    public void atualizarFeito(){
+        examesFeitoFragment.atualizarLista();
+    }
+
     public void mudarFeito(int position){
         exameAgendadosFragment.mudarFeito(position);
+    }
+
+
+    @Nullable
+    @Override
+    public CharSequence getPageTitle(int position) {
+        switch (position){
+            case 0:
+                return "Agendados";
+            case 1:
+                return "Feitos";
+        }
+        return super.getPageTitle(position);
     }
 }
