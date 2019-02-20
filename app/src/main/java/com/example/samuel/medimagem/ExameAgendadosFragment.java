@@ -77,7 +77,8 @@ public class ExameAgendadosFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.exames_agendados_list, container, false);
+        View view;
+        view = inflater.inflate(R.layout.exames_agendados_list, container, false);
 
         // Set the adapter
         if (view instanceof RecyclerView) {
@@ -94,6 +95,8 @@ public class ExameAgendadosFragment extends Fragment {
 
         }
         Log.i("DEBUG", "view created");
+
+
         return view;
     }
 
@@ -134,9 +137,7 @@ public class ExameAgendadosFragment extends Fragment {
         dao.atualizarFeito(listaExames.get(position), true);
         dao.fechar();
         listaExames.remove(position);
-        recyclerView.removeViewAt(position);
-        adapter.notifyItemRemoved(position);
-        adapter.notifyItemRangeChanged(position, listaExames.size());
+        atualizarLista();
 
     }
 
@@ -166,8 +167,10 @@ public class ExameAgendadosFragment extends Fragment {
 
         @Override
         protected void onPostExecute(ArrayList<Exam> aVoid) {
+
             adapter = new ExamesAgendadosAdapter(listaExames, mListener);
             recyclerView.setAdapter(adapter);
+
             super.onPostExecute(aVoid);
         }
     }

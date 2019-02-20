@@ -1,9 +1,8 @@
 package com.example.samuel.medimagem;
 
 import android.content.Intent;
-import android.graphics.Camera;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -59,14 +58,28 @@ public class ResumoExameActivity extends AppCompatActivity {
                 intent.putExtra("exame", exame);
                 intent.putExtra("count", 0);
                 startActivity(intent);
-                break;
+                return true;
+
         }
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
     public boolean onSupportNavigateUp() {
         finish();
-        return true;
+        return super.onSupportNavigateUp();
+    }
+
+    @Override
+    public boolean onNavigateUp() {
+        finish();
+        return super.onNavigateUp();
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+
     }
 }

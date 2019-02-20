@@ -65,4 +65,10 @@ public class ExamesPagerAdapter extends FragmentStatePagerAdapter {
         }
         return super.getPageTitle(position);
     }
+
+
+    @Override
+    public int getItemPosition(@NonNull Object object) {
+        return POSITION_NONE;
+    }
 }

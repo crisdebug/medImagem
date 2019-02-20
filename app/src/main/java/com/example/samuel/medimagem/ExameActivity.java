@@ -41,7 +41,6 @@ public class ExameActivity extends AppCompatActivity implements ExameAgendadosFr
 
     @Override
     protected void onResume() {
-
         super.onResume();
     }
 
@@ -96,9 +95,11 @@ public class ExameActivity extends AppCompatActivity implements ExameAgendadosFr
         final ViewPager viewPager = findViewById(R.id.exames_viewPager);
         pagerAdapter = new ExamesPagerAdapter(getSupportFragmentManager(), medico);
         viewPager.setAdapter(pagerAdapter);
-        viewPager.setSaveFromParentEnabled(false);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setupWithViewPager(viewPager);
+        viewPager.setSaveFromParentEnabled(false);
+        viewPager.setOffscreenPageLimit(1);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
