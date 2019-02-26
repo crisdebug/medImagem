@@ -1,7 +1,5 @@
 package com.example.samuel.medimagem;
 
-import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,7 +12,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Locale;
 
 public class ExamesAgendadosAdapter extends RecyclerView.Adapter<ExamesAgendadosAdapter.BaseViewHolder> {
@@ -31,12 +28,22 @@ public class ExamesAgendadosAdapter extends RecyclerView.Adapter<ExamesAgendados
         Collections.sort(exames, new Comparator<Exam>() {
             @Override
             public int compare(Exam o1, Exam o2) {
-                return o1.getHoraData().compareTo(o2.getHoraData());
+                return o1.getHoraData().getDate() - o2.getHoraData().getDate();
             }
         });
 
+        Collections.sort(exames, new Comparator<Exam>() {
+            @Override
+            public int compare(Exam o1, Exam o2) {
+                long value = o1.getHoraData().getTime() - o2.getHoraData().getTime();
+                int ret = (int) value;
+                return ret;
+            }
+        });
+
+
         for (int i = 0; i<exames.size(); i++){
-            if (i == 0 || exames.get(i).getHoraData().compareTo(exames.get(i-1).getHoraData()) > 0){
+            if (i == 0 || exames.get(i).getHoraData().getDate() - exames.get(i-1).getHoraData().getDate() > 0){
                 Exam header = new Exam();
                 header.setViewType(1);
                 header.setHoraData(exames.get(i).getHoraData());

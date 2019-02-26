@@ -5,6 +5,10 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.view.ViewGroup;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ExamesPagerAdapter extends FragmentStatePagerAdapter {
 
@@ -12,12 +16,16 @@ public class ExamesPagerAdapter extends FragmentStatePagerAdapter {
     int medicoID;
     ExameAgendadosFragment exameAgendadosFragment;
     ExamesFeitoFragment examesFeitoFragment;
+    private Map<Integer, String> fragmentTags;
+    private FragmentManager fm;
 
 
     public ExamesPagerAdapter(FragmentManager fm, int medicoID) {
         super(fm);
+        this.fm = fm;
         this.tabsNum = 2;
         this.medicoID = medicoID;
+        fragmentTags = new HashMap<>();
     }
 
     @Override
@@ -66,6 +74,27 @@ public class ExamesPagerAdapter extends FragmentStatePagerAdapter {
         return super.getPageTitle(position);
     }
 
+    @NonNull
+    @Override
+    public Object instantiateItem(@NonNull ViewGroup container, int position) {
+        Object object = super.instantiateItem(container, position);
+        if (object instanceof Fragment){
+            Fragment fragment = (Fragment) object;
+            String tag = fragment.getTag();
+            fragmentTags.put(position, tag);
+        }
+        return object;
+
+    }
+
+    public Fragment getFragment(int position){
+        Fragment fragment = null;
+        String tag = fragmentTags.get(position);
+        if (tag != null){
+            fragment = fm.findFragmentByTag(tag);
+        }
+        return fragment;
+    }
 
     @Override
     public int getItemPosition(@NonNull Object object) {

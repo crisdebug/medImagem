@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +18,7 @@ import android.view.View;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
-public class ExameActivity extends AppCompatActivity implements ExameAgendadosFragment.OnExameAgendadoInteractionListener, ExamesFeitoFragment.OnExameFeitoInteractionListener {
+public class ExameActivity extends AppCompatActivity implements ExameAgendadosFragment.OnExameAgendadoInteractionListener, ExamesFeitoFragment.OnExameFeitoInteractionListener, ViewPager.OnPageChangeListener {
 
 
     private ViewPager viewPager;
@@ -98,7 +99,7 @@ public class ExameActivity extends AppCompatActivity implements ExameAgendadosFr
         tabLayout.setupWithViewPager(viewPager);
         viewPager.setSaveFromParentEnabled(false);
         viewPager.setOffscreenPageLimit(1);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        viewPager.addOnPageChangeListener(this);
 
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -147,5 +148,23 @@ public class ExameActivity extends AppCompatActivity implements ExameAgendadosFr
                 finish();
             }
         }
+    }
+
+    @Override
+    public void onPageScrolled(int i, float v, int i1) {
+
+    }
+
+    @Override
+    public void onPageSelected(int i) {
+        Fragment fragment = pagerAdapter.getFragment(i);
+        if (fragment != null){
+            fragment.onResume();
+        }
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int i) {
+
     }
 }

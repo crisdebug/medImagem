@@ -12,7 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * A fragment representing a list of Items.
@@ -31,6 +33,7 @@ public class ExameAgendadosFragment extends Fragment {
     private int medico;
     private ExamesAgendadosAdapter adapter;
     private RecyclerView recyclerView;
+    private boolean canRunBG = true;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -58,6 +61,7 @@ public class ExameAgendadosFragment extends Fragment {
         }
 
         carregarExame();
+        logCompare();
 
         setRetainInstance(true);
     }
@@ -92,6 +96,10 @@ public class ExameAgendadosFragment extends Fragment {
             adapter = new ExamesAgendadosAdapter(listaExames, mListener);
 
             recyclerView.setAdapter(adapter);
+
+            RecyclerSectionItemDecoration sectionItemDecoration = new RecyclerSectionItemDecoration(getResources().getDimensionPixelSize(R.dimen.header), true, getSectionCallback(listaExames));
+
+
 
         }
         Log.i("DEBUG", "view created");
@@ -141,6 +149,12 @@ public class ExameAgendadosFragment extends Fragment {
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        atualizarLista();
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -157,11 +171,46 @@ public class ExameAgendadosFragment extends Fragment {
         void onExameAgendadoLongInteraction(int position);
     }
 
+    private RecyclerSectionItemDecoration.SectionCallback getSectionCallback(final ArrayList<Exam> listaExames){
+        return new RecyclerSectionItemDecoration.SectionCallback() {
+            @Override
+            public boolean isSection(int position) {
+                return position == 0 || listaExames.get(position).getHoraData().compareTo(listaExames.get(position-1).getHoraData()) != 0;
+            }
+
+            @Override
+            public CharSequence getSectionHeader(int position) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy", new Locale("pt", "BR"));
+
+                return dateFormat.format(listaExames.get(position).getHoraData());
+            }
+        };
+    }
+
+    private void logCompare(){
+        for (int i = 0; i<listaExames.size(); i++){
+                if (i != 0){
+                    Log.i("DEBUG", String.valueOf(listaExames.get(i).getHoraData().getDate() - listaExames.get(i).getHoraData().getDate()));
+                }
+        }
+    }
+
     private class AtualizarListaTask extends AsyncTask<Void, Void, ArrayList<Exam>>{
 
         @Override
+        protected void onPreExecute() {
+
+            super.onPreExecute();
+        }
+
+        @Override
         protected ArrayList<Exam> doInBackground(Void... voids) {
-            ExameAgendadosFragment.this.carregarExame();
+            if (canRunBG){
+                canRunBG = false;
+                ExameAgendadosFragment.this.carregarExame();
+                canRunBG = true;
+            }
+
             return null;
         }
 
@@ -174,4 +223,6 @@ public class ExameAgendadosFragment extends Fragment {
             super.onPostExecute(aVoid);
         }
     }
+
+
 }
