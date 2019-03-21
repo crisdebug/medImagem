@@ -7,8 +7,12 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
+import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +32,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class CameraActivity extends AppCompatActivity {
 
@@ -39,6 +44,10 @@ public class CameraActivity extends AppCompatActivity {
 
     private Exam exame;
     ArrayList<Foto> fotos;
+    SpeechRecognizer mSpeechRecognizer;
+    Intent mSpeechRecognizerIntent;
+    AudioManager audioManager;
+    int current_volume;
 
 
     private int count = 1;
@@ -49,6 +58,8 @@ public class CameraActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         setContentView(R.layout.activity_camera);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        current_volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 
         exame = (Exam) getIntent().getSerializableExtra("exame");
         count = getIntent().getIntExtra("count", 0);
@@ -60,33 +71,72 @@ public class CameraActivity extends AppCompatActivity {
         camera = null;
         camera = checkDeviceCamera();
 
+        mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+
+        mSpeechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+
+        mSpeechRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override
+            public void onReadyForSpeech(Bundle params) {
+
+            }
+
+            @Override
+            public void onBeginningOfSpeech() {
+
+            }
+
+            @Override
+            public void onRmsChanged(float rmsdB) {
+
+            }
+
+            @Override
+            public void onBufferReceived(byte[] buffer) {
+
+            }
+
+            @Override
+            public void onEndOfSpeech() {
+
+            }
+
+            @Override
+            public void onError(int error) {
+
+            }
+
+            @Override
+            public void onResults(Bundle results) {
+                ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                Log.i("DEBUG", "FALOU");
+
+                if (matches.get(0).equals("foto")){
+                    tirarFoto();
+                }
+            }
+
+            @Override
+            public void onPartialResults(Bundle partialResults) {
+
+            }
+
+            @Override
+            public void onEvent(int eventType, Bundle params) {
+
+            }
+        });
+
 
 
         ImageButton captureButton = findViewById(R.id.tirar_foto);
         captureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                flash.setVisibility(View.VISIBLE);
-                AlphaAnimation fade = new AlphaAnimation(1, 0);
-                fade.setDuration(50);
-                fade.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        flash.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-                flash.startAnimation(fade);
-                camera.takePicture(null, null, pictureCallback);
+                tirarFoto();
 
             }
         });
@@ -115,12 +165,48 @@ public class CameraActivity extends AppCompatActivity {
 
     }
 
+    private void tirarFoto() {
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0,  AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+        mSpeechRecognizer.stopListening();
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, current_volume, AudioManager.FLAG_PLAY_SOUND);
+        Log.i("DEBUG", "Parou de escutar");
+        flash.setVisibility(View.VISIBLE);
+        AlphaAnimation fade = new AlphaAnimation(1, 0);
+        fade.setDuration(50);
+        fade.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                flash.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        flash.startAnimation(fade);
+        camera.takePicture(null, null, pictureCallback);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0,  AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+        mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, current_volume, AudioManager.FLAG_PLAY_SOUND);
+        Log.i("DEBUG", "Escutando");
+    }
+
     @Override
     protected void onResume() {
         try{
             camera = null;
             camera = checkDeviceCamera();
             if (camera != null){
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0,  AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+                mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, current_volume, AudioManager.FLAG_PLAY_SOUND);
+                Log.i("DEBUG", "Escutando");
                 mImageSurfaceView = null;
                 mImageSurfaceView = new ImageSurfaceView(this, camera);
                 cameraPreviewLayout.addView(mImageSurfaceView);
@@ -135,6 +221,9 @@ public class CameraActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0,  AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+        mSpeechRecognizer.stopListening();
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, current_volume, AudioManager.FLAG_PLAY_SOUND);
 
         if (camera != null){
             camera.stopPreview();
@@ -143,7 +232,9 @@ public class CameraActivity extends AppCompatActivity {
             mImageSurfaceView = null;
       }
 
+
         super.onPause();
+
     }
 
 
@@ -205,6 +296,8 @@ public class CameraActivity extends AppCompatActivity {
                             Log.d("Fotos", "Foto salva");
                             count++;
                             camera.startPreview();
+
+
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
