@@ -17,6 +17,8 @@ import android.util.Log;
 import android.view.Surface;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -33,6 +35,7 @@ public class CameraActivity extends AppCompatActivity {
     private Camera camera;
 
     private FrameLayout cameraPreviewLayout;
+    private FrameLayout flash;
 
     private Exam exame;
     ArrayList<Foto> fotos;
@@ -49,6 +52,7 @@ public class CameraActivity extends AppCompatActivity {
 
         exame = (Exam) getIntent().getSerializableExtra("exame");
         count = getIntent().getIntExtra("count", 0);
+        flash = findViewById(R.id.flash);
 
         fotos = (ArrayList<Foto>) getIntent().getSerializableExtra("fotos");
 
@@ -62,6 +66,26 @@ public class CameraActivity extends AppCompatActivity {
         captureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                flash.setVisibility(View.VISIBLE);
+                AlphaAnimation fade = new AlphaAnimation(1, 0);
+                fade.setDuration(50);
+                fade.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        flash.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+                flash.startAnimation(fade);
                 camera.takePicture(null, null, pictureCallback);
 
             }
@@ -127,6 +151,7 @@ public class CameraActivity extends AppCompatActivity {
     Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
+
             SalvarTask salvarTask = new SalvarTask();
             salvarTask.execute(data);
         }
