@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <uses-feature android:name="android.hardware.camera" />
 
@@ -16,13 +16,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ResumoExameActivity"
-            android:parentActivityName=".ExameActivity">
-
-        </activity>
-        <activity android:name=".CadastrarExameActivity"
-            android:parentActivityName=".ExameActivity"
-            android:label="Marcar Exame"/>
+        <activity android:name=".ObservacoesActivity"
+            android:label="Observações"></activity>
+        <activity
+            android:name=".ResumoExameActivity"
+            android:parentActivityName=".ExameActivity"></activity>
+        <activity
+            android:name=".CadastrarExameActivity"
+            android:label="Marcar Exame"
+            android:parentActivityName=".ExameActivity" />
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
