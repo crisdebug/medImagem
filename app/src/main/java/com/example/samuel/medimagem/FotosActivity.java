@@ -89,7 +89,7 @@ public class FotosActivity extends AppCompatActivity implements FotosFragment.On
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.laudo:
-                startActivity(new Intent(FotosActivity.this, LaudoActivity.class));
+                startActivity(new Intent(FotosActivity.this, ObservacoesActivity.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

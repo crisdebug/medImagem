@@ -13,10 +13,10 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 public class ExameActivity extends AppCompatActivity implements ExameAgendadosFragment.OnExameAgendadoInteractionListener, ExamesFeitoFragment.OnExameFeitoInteractionListener, ViewPager.OnPageChangeListener {
 
@@ -138,9 +138,11 @@ public class ExameActivity extends AppCompatActivity implements ExameAgendadosFr
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if(requestCode == REQUEST){
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                if(grantResults[1] == PackageManager.PERMISSION_GRANTED){
-                    init();
-                    Log.d("PERMISSION", "Permissão dada");
+                if(grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    if (grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+                        init();
+                        Log.d("PERMISSION", "Permissão dada");
+                    }
                 }
 
             }else{
