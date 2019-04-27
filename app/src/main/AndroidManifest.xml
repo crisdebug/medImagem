@@ -16,8 +16,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <service android:name=".ImagensService"
+            android:exported="false"/>
         <activity android:name=".ObservacoesActivity"
-            android:label="Observações"></activity>
+            android:label="Observações"
+            android:parentActivityName=".FotosActivity"></activity>
         <activity
             android:name=".ResumoExameActivity"
             android:parentActivityName=".ExameActivity"></activity>
@@ -33,15 +36,13 @@
             </intent-filter>
         </activity>
         <activity android:name=".ExameActivity" />
-        <activity android:name=".MainActivity" />
+
         <activity
             android:name=".CameraActivity"
-            android:parentActivityName=".MainActivity" />
+            />
         <activity
             android:name=".FotosActivity"
             android:parentActivityName=".CameraActivity" />
-        <activity android:name=".LaudoActivity" />
-        <activity android:name=".GerarActivity" />
     </application>
 
 </manifest>

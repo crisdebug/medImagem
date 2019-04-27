@@ -1,78 +1,44 @@
 package com.example.samuel.medimagem;
 
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
+
 public class ObservacoesActivity extends AppCompatActivity {
 
-    private FloatingActionButton fabOpen;
-    private FloatingActionButton fabClose;
-    private FloatingActionButton fabCreateText;
-    private FloatingActionButton fabCreateAudio;
+    private FloatingActionMenu menu;
+    private FloatingActionButton button;
 
-    private boolean isFabOpen;
+    private Exam exame;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_observacoes);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        fabOpen = findViewById(R.id.fab_open_menu);
-        fabClose = findViewById(R.id.fab_close_menu);
-        fabCreateText = findViewById(R.id.fab_create_text);
-        fabCreateAudio = findViewById(R.id.fab_create_audio);
+        menu = findViewById(R.id.fab_menu);
+        button = findViewById(R.id.fab_audio);
 
-        hideFabs();
+        exame = (Exam) getIntent().getSerializableExtra("exame");
 
-        fabOpen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isFabOpen){
-                    showFabMenu();
-                }
-            }
-        });
 
-        fabClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isFabOpen){
-                    closeFabMenu();
-                }
-            }
-        });
-    }
 
-    private void hideFabs() {
-        fabClose.hide();
-        fabCreateText.hide();
-        fabCreateAudio.hide();
-    }
-
-    private void showFabMenu(){
-        isFabOpen = true;
-        fabOpen.hide();
-        showFabs();
-        fabCreateText.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
-        fabCreateAudio.animate().translationY(-getResources().getDimension(R.dimen.standard_105));
-    }
-
-    private void showFabs() {
-        fabClose.show();
-        fabCreateText.show();
-        fabCreateAudio.show();
-    }
-
-    private void closeFabMenu(){
-        isFabOpen = false;
-        fabOpen.show();
-        hideFabs();
-        fabCreateText.animate().translationY(0);
-        fabCreateAudio.animate().translationY(0);
     }
 
 
-
+    @Override
+    public boolean onSupportNavigateUp() {
+        Intent returningIntent = new Intent(this, FotosActivity.class);
+        returningIntent.putExtra("exame", exame);
+        startActivity(returningIntent);
+        finish();
+        return true;
+    }
 }

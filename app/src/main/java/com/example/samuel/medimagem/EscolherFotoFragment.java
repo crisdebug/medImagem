@@ -5,17 +5,23 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -31,7 +37,7 @@ public class EscolherFotoFragment extends Fragment {
     private static final String IMAGEM = "imagem";
     private static final String POSITION = "position";
 
-    private Foto imagemClicada;
+    private ArrayList<Foto> listaFotos;
     private int position;
 
     private OnFragmentInteractionListener mListener;
@@ -47,10 +53,10 @@ public class EscolherFotoFragment extends Fragment {
 
      * @return A new instance of fragment EscolherFotoFragment.
      */
-    public static EscolherFotoFragment newInstance(Foto imagemClicada, int position) {
+    public static EscolherFotoFragment newInstance(ArrayList<Foto> listaFotos, int position) {
         EscolherFotoFragment fragment = new EscolherFotoFragment();
         Bundle args = new Bundle();
-        args.putSerializable(IMAGEM, imagemClicada);
+        args.putSerializable(IMAGEM, listaFotos);
         args.putInt(POSITION, position);
         fragment.setArguments(args);
         return fragment;
@@ -60,7 +66,7 @@ public class EscolherFotoFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            imagemClicada = (Foto) getArguments().getSerializable(IMAGEM);
+            listaFotos = (ArrayList<Foto>) getArguments().getSerializable(IMAGEM);
             position = getArguments().getInt(POSITION);
         }
     }
@@ -75,9 +81,26 @@ public class EscolherFotoFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ImageView foto = view.findViewById(R.id.imagem);
-        Bitmap imagem = BitmapFactory.decodeFile(imagemClicada.getImagePath().getAbsolutePath());
-        foto.setImageBitmap(imagem);
+        ViewPager pager = view.findViewById(R.id.imagem_pager);
+        EscolherFotoPagerAdapter adapter = new EscolherFotoPagerAdapter(getActivity(), listaFotos);
+        pager.setAdapter(adapter);
+        pager.setCurrentItem(position);
+        pager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                changePosition(position);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
         Button negarBt = view.findViewById(R.id.nao);
         Button aceitarBt = view.findViewById(R.id.sim);
         negarBt.setOnClickListener(new View.OnClickListener() {
@@ -109,6 +132,10 @@ public class EscolherFotoFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+    private void changePosition(int position){
+        this.position = position;
+
     }
 
     /**

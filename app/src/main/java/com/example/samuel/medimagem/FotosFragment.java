@@ -1,20 +1,16 @@
 package com.example.samuel.medimagem;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -28,7 +24,7 @@ import java.util.ArrayList;
  * Use the {@link FotosFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FotosFragment extends Fragment {
+public class FotosFragment extends Fragment implements ImagesLoadedCallback{
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String IMAGES = "images";
 
@@ -38,6 +34,7 @@ public class FotosFragment extends Fragment {
     private GridView grid_fotos;
 
     private OnFragmentInteractionListener mListener;
+    private RemoveLoadingCallback callback;
 
     public FotosFragment() {
         // Required empty public constructor
@@ -63,7 +60,7 @@ public class FotosFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             fotos = (ArrayList<Foto>) getArguments().getSerializable(IMAGES);
-            adapter = new ImageAdapter(getActivity(), fotos);
+            adapter = new ImageAdapter(getActivity(), fotos, this);
         }
         setHasOptionsMenu(true);
     }
@@ -80,6 +77,7 @@ public class FotosFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         grid_fotos = view.findViewById(R.id.grade_fotos);
+
         grid_fotos.setAdapter(adapter);
         grid_fotos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -100,8 +98,9 @@ public class FotosFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
+        if (context instanceof OnFragmentInteractionListener && context instanceof RemoveLoadingCallback) {
             mListener = (OnFragmentInteractionListener) context;
+            callback = (RemoveLoadingCallback) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -126,5 +125,11 @@ public class FotosFragment extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         public void onImageClicked(Foto foto, int position);
+    }
+
+    @Override
+    public void imagesHasLoaded() {
+        grid_fotos.setVisibility(View.VISIBLE);
+        callback.removerLoading();
     }
 }

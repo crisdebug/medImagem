@@ -4,14 +4,14 @@ import java.io.File;
 import java.io.Serializable;
 
 public class Foto implements Serializable {
-    private File imagePath;
+    private String imagePath;
     private boolean beingUsed;
 
-    public File getImagePath() {
+    public String getImagePath() {
         return imagePath;
     }
 
-    public void setImagePath(File imagePath) {
+    public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
     }
 

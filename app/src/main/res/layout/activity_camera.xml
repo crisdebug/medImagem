@@ -4,12 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CameraActivity">
+    tools:context=".CameraActivity"
+    android:background="@android:color/black">
+
+
+    <ProgressBar
+        android:id="@+id/loading_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:indeterminateDrawable="@drawable/progress"/>
 
     <FrameLayout
         android:id="@+id/camera_preview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -32,6 +43,7 @@
         android:layout_marginBottom="40dp"
         android:src="@drawable/outline_camera_black_18dp"
         android:background="@drawable/round_shape"
+        android:visibility="gone"
         />
     <ImageButton
         android:id="@+id/preencher"
@@ -43,7 +55,7 @@
         android:layout_margin="32dp"
         android:src="@drawable/check_black"
         android:background="@drawable/round_shape"
-
+        android:visibility="gone"
         />
     <ImageButton
         android:id="@+id/voltar"
@@ -54,7 +66,7 @@
         android:text="voltar"
         android:src="@drawable/baseline_reply_black_18dp"
         android:background="@drawable/round_shape"
-
+        android:visibility="gone"
         />
 
 </RelativeLayout>

@@ -10,12 +10,15 @@ import android.hardware.Camera;
 import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Surface;
@@ -26,6 +29,7 @@ import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -42,6 +46,8 @@ public class CameraActivity extends AppCompatActivity {
     private FrameLayout cameraPreviewLayout;
     private FrameLayout flash;
 
+    private ProgressBar loading;
+
     private Exam exame;
     ArrayList<Foto> fotos;
     SpeechRecognizer mSpeechRecognizer;
@@ -51,6 +57,12 @@ public class CameraActivity extends AppCompatActivity {
 
 
     private int count = 1;
+    private boolean countAvailable = false;
+    private ImageButton captureButton;
+    private ImageButton voltar;
+    private ImageButton proximo;
+    private FotosResultReceiver resultReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
@@ -62,8 +74,14 @@ public class CameraActivity extends AppCompatActivity {
         current_volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 
         exame = (Exam) getIntent().getSerializableExtra("exame");
-        count = getIntent().getIntExtra("count", 0);
+        resultReceiver = new FotosResultReceiver(new Handler());
+        Intent intent = new Intent(this, ImagensService.class);
+        intent.putExtra("solicitacao", "contador");
+        intent.putExtra("exame", exame);
+        intent.putExtra("result_receiver", resultReceiver);
+        startService(intent);
         flash = findViewById(R.id.flash);
+        loading = findViewById(R.id.loading_camera);
 
         fotos = (ArrayList<Foto>) getIntent().getSerializableExtra("fotos");
 
@@ -131,8 +149,7 @@ public class CameraActivity extends AppCompatActivity {
         });
 
 
-
-        ImageButton captureButton = findViewById(R.id.tirar_foto);
+        captureButton = findViewById(R.id.tirar_foto);
         captureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -141,14 +158,14 @@ public class CameraActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton voltar = findViewById(R.id.voltar);
+        voltar = findViewById(R.id.voltar);
         voltar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
-        ImageButton proximo = findViewById(R.id.preencher);
+        proximo = findViewById(R.id.preencher);
         proximo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -190,7 +207,13 @@ public class CameraActivity extends AppCompatActivity {
             }
         });
         flash.startAnimation(fade);
+        captureButton.setClickable(false);
+        voltar.setClickable(false);
+        proximo.setClickable(false);
         camera.takePicture(null, null, pictureCallback);
+        captureButton.setClickable(true);
+        voltar.setClickable(true);
+        proximo.setClickable(true);
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0,  AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
         mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, current_volume, AudioManager.FLAG_PLAY_SOUND);
@@ -199,22 +222,8 @@ public class CameraActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        try{
-            camera = null;
-            camera = checkDeviceCamera();
-            if (camera != null){
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0,  AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
-                mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, current_volume, AudioManager.FLAG_PLAY_SOUND);
-                Log.i("DEBUG", "Escutando");
-                mImageSurfaceView = null;
-                mImageSurfaceView = new ImageSurfaceView(this, camera);
-                cameraPreviewLayout.addView(mImageSurfaceView);
-                Log.i("DEBUG", "camera adicionada");
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-            finish();
+        if (countAvailable) {
+            startCamera();
         }
         super.onResume();
     }
@@ -237,11 +246,63 @@ public class CameraActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0,  AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+        mSpeechRecognizer.stopListening();
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, current_volume, AudioManager.FLAG_PLAY_SOUND);
+
+        if (camera != null){
+            camera.stopPreview();
+            camera.release();
+            camera = null;
+            mImageSurfaceView = null;
+        }
+
+        if (mSpeechRecognizer != null){
+            mSpeechRecognizer.destroy();
+            mSpeechRecognizer = null;
+        }
+        super.onDestroy();
+    }
+
+    private void exibirCamera(){
+        countAvailable = true;
+        loading.setVisibility(View.GONE);
+        cameraPreviewLayout.setVisibility(View.VISIBLE);
+        captureButton.setVisibility(View.VISIBLE);
+        voltar.setVisibility(View.VISIBLE);
+        proximo.setVisibility(View.VISIBLE);
+        startCamera();
+    }
+
+    private void startCamera(){
+        try{
+            camera = null;
+            camera = checkDeviceCamera();
+            if (camera != null){
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0,  AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+                mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, current_volume, AudioManager.FLAG_PLAY_SOUND);
+                Log.i("DEBUG", "Escutando");
+                mImageSurfaceView = null;
+                mImageSurfaceView = new ImageSurfaceView(this, camera);
+                cameraPreviewLayout.addView(mImageSurfaceView);
+                Log.i("DEBUG", "camera adicionada");
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            finish();
+        }
+    }
+
 
 
     Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
+
+
 
             SalvarTask salvarTask = new SalvarTask();
             salvarTask.execute(data);
@@ -305,6 +366,31 @@ public class CameraActivity extends AppCompatActivity {
                 }
             }
             return null;
+        }
+    }
+
+    private class FotosResultReceiver extends ResultReceiver{
+
+        /**
+         * Create a new ResultReceive to receive results.  Your
+         * {@link #onReceiveResult} method will be called from the thread running
+         * <var>handler</var> if given, or from an arbitrary thread if null.
+         *
+         * @param handler
+         */
+        public FotosResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            if (resultCode == FotosTasks.SUCESSO_COUNT){
+                count = resultData.getInt("contador");
+                exibirCamera();
+            } else if (resultCode == FotosTasks.SUCESSO_SALVAR){
+                count++;
+                camera.startPreview();
+            }
         }
     }
 

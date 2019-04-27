@@ -1,8 +1,10 @@
 package com.example.samuel.medimagem;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -56,7 +58,6 @@ public class ResumoExameActivity extends AppCompatActivity {
             case R.id.confirmar_menu:
                 Intent intent = new Intent(ResumoExameActivity.this, CameraActivity.class);
                 intent.putExtra("exame", exame);
-                intent.putExtra("count", 0);
                 startActivity(intent);
                 return true;
 

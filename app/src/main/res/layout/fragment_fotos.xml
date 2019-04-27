@@ -3,18 +3,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FotosFragment">
+    tools:context=".FotosFragment"
+    android:orientation="vertical">
 
 
     <GridView
         android:id="@+id/grade_fotos"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:columnWidth="90dp"
+        android:columnWidth="200dp"
         android:gravity="center"
-        android:horizontalSpacing="10dp"
-        android:numColumns="auto_fit"
+        android:horizontalSpacing="4dp"
+        android:numColumns="3"
+        android:verticalSpacing="4dp"
+        android:scrollbars="vertical"
+        android:scrollingCache="false"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="10dp"/>
+        />
+
+
 
 </FrameLayout>
