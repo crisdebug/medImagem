@@ -28,7 +28,8 @@
             android:name=".CadastrarExameActivity"
             android:label="Marcar Exame"
             android:parentActivityName=".ExameActivity" />
-        <activity android:name=".LoginActivity">
+        <activity android:name=".LoginActivity"
+            android:label="Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -42,7 +43,8 @@
             />
         <activity
             android:name=".FotosActivity"
-            android:parentActivityName=".CameraActivity" />
+            android:parentActivityName=".CameraActivity"
+            android:label="Selecionar Fotos"/>
     </application>
 
 </manifest>

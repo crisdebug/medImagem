@@ -53,7 +53,28 @@ public class ExameDAO {
                 cursor.moveToNext();
             }
         }
+        cursor.close();
         return exams;
+    }
+
+    public Exam getExame(long id){
+        Exam exame = new Exam();
+        Cursor cursor = database.query("Exames", null, "id = ?", new String[]{String.valueOf(id)}, null, null, null);
+        if (cursor.moveToFirst()){
+            while (!cursor.isAfterLast()){
+                exame.setId(cursor.getLong(cursor.getColumnIndex("id")));
+                exame.setNomePaciente(cursor.getString(cursor.getColumnIndex("NomePaciente")));
+                exame.setDataNascimento(cursor.getString(cursor.getColumnIndex("DataNascimento")), "ddMMyyyy");
+                exame.setNomeMae(cursor.getString(cursor.getColumnIndex("NomeMae")));
+                exame.setHoraData(cursor.getString(cursor.getColumnIndex("DataHora")), "ddMMyyyy - HHmm");
+                exame.setMedico(cursor.getLong(cursor.getColumnIndex("Medico")));
+                exame.setFeito(cursor.getInt(cursor.getColumnIndex("Feito")) == 1);
+                exame.setType(0);
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        return exame;
     }
 
 

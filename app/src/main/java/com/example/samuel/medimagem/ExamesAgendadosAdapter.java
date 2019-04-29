@@ -49,7 +49,6 @@ public class ExamesAgendadosAdapter extends RecyclerView.Adapter<ExamesAgendados
                 header.setHoraData(exames.get(i).getHoraData());
                 header.setFeito(false);
                 exames.add(i, header);
-                Log.i("DEBUG", "header add");
             }
         }
 
@@ -127,7 +126,6 @@ public class ExamesAgendadosAdapter extends RecyclerView.Adapter<ExamesAgendados
     @Override
     public BaseViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view;
-        Log.i("DEBUG", "view type: " + i);
         if (i == 0){
             view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.exame_agendado_item, viewGroup, false);
             Log.i("DEBUG", "item render");
