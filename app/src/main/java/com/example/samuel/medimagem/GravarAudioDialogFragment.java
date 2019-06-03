@@ -1,20 +1,30 @@
 package com.example.samuel.medimagem;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.github.clans.fab.FloatingActionButton;
+import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler;
+import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
+import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException;
+import com.github.lassana.recorder.AudioRecorder;
+import com.github.lassana.recorder.AudioRecorderBuilder;
 
 import java.io.File;
 
@@ -23,36 +33,51 @@ public class GravarAudioDialogFragment extends DialogFragment {
     private FloatingActionButton gravar;
     private Button salvar;
     private Button cancelar;
+    private TextView textoGravando;
     private boolean gravando;
     private Exam exame;
-    private MediaRecorder mediaRecorder;
+    AudioRecorder recorder;
     private String outputFile;
+    private String audioPath;
+    int record_count;
 
     public GravarAudioDialogFragment(){
 
     }
 
-    public static GravarAudioDialogFragment getInstance(int count, Exam exame){
+    public static GravarAudioDialogFragment getInstance(Exam exame, int record_count){
         GravarAudioDialogFragment fragment = new GravarAudioDialogFragment();
         Bundle args = new Bundle();
-        args.putInt("count", count);
         args.putSerializable("exame", exame);
+        args.putInt("record_count", record_count);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setStyle(DialogFragment.STYLE_NO_TITLE, R.style.DialogStyle);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.gravar_audio_dialog, container);
+        return inflater.inflate(R.layout.gravar_audio_dialog, container, false);
     }
 
-    @Override
+        @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        gravar = view.findViewById(R.id.recording_button);
+        gravar = view.findViewById(R.id.record_button);
         this.exame = (Exam) getArguments().getSerializable("exame");
+        this.record_count = getArguments().getInt("record_count");
+        textoGravando = view.findViewById(R.id.text_gravar_audio);
+        audioPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator+ "MedImagem"+ File.separator + exame.getNomePaciente().toUpperCase() + exame.getId() + File.separator+ "audio";
+        outputFile = audioPath + File.separator + record_count + "_TEMP"+ ".mp4";
+        recorder = AudioRecorderBuilder.with(getActivity()).fileName(outputFile).config(AudioRecorder.MediaRecorderConfig.DEFAULT).loggable().build();
 
         gravar.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -61,56 +86,44 @@ public class GravarAudioDialogFragment extends DialogFragment {
                 switch (event.getAction()){
                     case MotionEvent.ACTION_DOWN:
                         if (!isGravando()) {
-                            try {
-                                File medImagemDirectory = new File(Environment.getExternalStorageDirectory(), "MedImagem");
-                                File exameDir = null;
-                                File audioDir = null;
-                                if (!medImagemDirectory.exists()) {
-                                    if (!medImagemDirectory.mkdirs()) {
+                                recorder.start(new AudioRecorder.OnStartListener() {
+                                    @Override
+                                    public void onStarted() {
+                                        setGravando(true);
+                                        salvar.setEnabled(false);
+                                        cancelar.setEnabled(false);
+                                        textoGravando.setText("Gravando...");
                                     }
-                                } else {
-                                    exameDir = new File(medImagemDirectory, exame.getNomePaciente().toUpperCase() + exame.getId());
-                                    if (!exameDir.exists()) {
-                                        if (!exameDir.mkdirs()) {
-                                            Log.d("Diretorio", "Falha ao criar a Pasta");
-                                        }
+
+                                    @Override
+                                    public void onException(Exception e) {
+                                        e.printStackTrace();
                                     }
-                                }
-                                if (exameDir != null) {
-                                    audioDir = new File(audioDir.getPath(), "audio");
-                                    if (!audioDir.exists()) {
-                                        if (!audioDir.mkdirs()) {
-                                            Log.d("Diretorio", "Falha ao criar a pasta de áudio");
-                                        }
-                                    }
-                                }
-                                outputFile = audioDir.getAbsolutePath() + File.separator + getArguments().getInt("count") + ".aac";
-                                mediaRecorder = new MediaRecorder();
-                                mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-                                mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
-                                mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AAC_ADTS);
-                                mediaRecorder.setOutputFile(outputFile);
-                                mediaRecorder.prepare();
-                                mediaRecorder.start();
-                                setGravando(true);
-                                salvar.setEnabled(false);
-                                cancelar.setEnabled(false);
-                            }catch (Exception e){
-                                e.printStackTrace();
-                            }
+                                });
+
+
                         }
                         break;
 
                     case MotionEvent.ACTION_UP:
                         if (isGravando()){
-                            try{
-                                mediaRecorder.stop();
-                                setGravando(false);
-                                salvar.setEnabled(true);
-                                cancelar.setEnabled(true);
-                            }catch (Exception e){
-                              e.printStackTrace();
-                            }
+
+                                recorder.pause(new AudioRecorder.OnPauseListener() {
+                                    @Override
+                                    public void onPaused(String activeRecordFileName) {
+                                        outputFile = activeRecordFileName;
+                                        setGravando(false);
+                                        salvar.setEnabled(true);
+                                        cancelar.setEnabled(true);
+                                        textoGravando.setText("Toque e segure no botão para gravar o áudio");
+                                    }
+
+                                    @Override
+                                    public void onException(Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                });
+
                         }
                         break;
                 }
@@ -124,8 +137,40 @@ public class GravarAudioDialogFragment extends DialogFragment {
         salvar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mediaRecorder.release();
-                mediaRecorder = null;
+                recorder = null;
+                FFmpeg fFmpeg = FFmpeg.getInstance(getActivity());
+                try {
+                    fFmpeg.execute(new String[]{"-i" ,outputFile , "-vn", audioPath + File.separator + record_count+ ".wav"}, new ExecuteBinaryResponseHandler(){
+                        @Override
+                        public void onSuccess(String message) {
+                            super.onSuccess(message);
+                            Log.d("FFMPEG", message);
+                            File delete = new File(outputFile);
+                            if(delete.exists()){
+                                delete.delete();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(String message) {
+                            super.onFailure(message);
+                            Log.d("FFMPEG", message);
+                        }
+                    });
+                }catch (FFmpegCommandAlreadyRunningException e){
+                    e.printStackTrace();
+                }
+
+                if(getActivity() instanceof ObservacoesActivity){
+                    ((ObservacoesActivity) getActivity()).updateCount();
+                    Observacao observacao = new Observacao();
+                    observacao.setTipo(Observacao.TIPO_AUDIO);
+                    observacao.setConteudo(audioPath + File.separator + record_count+ ".wav");
+                    observacao.setExame(exame);
+                    ((ObservacoesActivity) getActivity()).addObservacao(observacao);
+                }
+                recorder = null;
+
                 dismiss();
             }
         });
@@ -133,10 +178,11 @@ public class GravarAudioDialogFragment extends DialogFragment {
         cancelar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mediaRecorder.release();
-                mediaRecorder = null;
                 File delete = new File(outputFile);
-                delete.delete();
+                if(delete.exists()){
+                    delete.delete();
+                }
+                recorder = null;
                 dismiss();
             }
         });

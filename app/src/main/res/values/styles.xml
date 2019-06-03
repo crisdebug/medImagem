@@ -8,4 +8,5 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="DialogStyle" parent="ThemeOverlay.AppCompat.Dialog.Alert"></style>
 </resources>

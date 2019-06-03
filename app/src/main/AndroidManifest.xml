@@ -29,7 +29,7 @@
             android:label="Marcar Exame"
             android:parentActivityName=".ExameActivity" />
         <activity android:name=".LoginActivity"
-            android:label="Login">
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

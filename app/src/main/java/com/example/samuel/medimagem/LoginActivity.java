@@ -12,6 +12,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
+import com.github.hiteshsondhi88.libffmpeg.LoadBinaryResponseHandler;
+import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegNotSupportedException;
+
 public class LoginActivity extends AppCompatActivity implements TextWatcher {
 
     private TextView erro_user;
@@ -25,6 +29,8 @@ public class LoginActivity extends AppCompatActivity implements TextWatcher {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        getSupportActionBar().setTitle("Login");
 
         userED = findViewById(R.id.user_ed);
         senhaED = findViewById(R.id.senha_ed);
@@ -53,6 +59,26 @@ public class LoginActivity extends AppCompatActivity implements TextWatcher {
                 return handled;
             }
         });
+
+        FFmpeg ffmpeg = FFmpeg.getInstance(this);
+        try {
+            ffmpeg.loadBinary(new LoadBinaryResponseHandler() {
+
+                @Override
+                public void onStart() {}
+
+                @Override
+                public void onFailure() {}
+
+                @Override
+                public void onSuccess() {}
+
+                @Override
+                public void onFinish() {}
+            });
+        } catch (FFmpegNotSupportedException e) {
+            finish();
+        }
     }
 
     @Override

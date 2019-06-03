@@ -1,5 +1,7 @@
 package com.example.samuel.medimagem;
 
+import androidx.annotation.NonNull;
+
 public class Observacao {
 
     public static final String TIPO_AUDIO = "audio";
@@ -40,5 +42,12 @@ public class Observacao {
 
     public void setExame(Exam exame) {
         this.exame = exame;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        String retorno  = this.tipo + " " + this.conteudo;
+        return retorno;
     }
 }
