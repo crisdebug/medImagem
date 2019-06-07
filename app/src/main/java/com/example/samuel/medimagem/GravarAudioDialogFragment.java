@@ -1,12 +1,7 @@
 package com.example.samuel.medimagem;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
-import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -98,6 +93,7 @@ public class GravarAudioDialogFragment extends DialogFragment {
                                     @Override
                                     public void onException(Exception e) {
                                         e.printStackTrace();
+                                        Log.d("DEBUG RECORD", e.getMessage());
                                     }
                                 });
 
@@ -111,7 +107,6 @@ public class GravarAudioDialogFragment extends DialogFragment {
                                 recorder.pause(new AudioRecorder.OnPauseListener() {
                                     @Override
                                     public void onPaused(String activeRecordFileName) {
-                                        outputFile = activeRecordFileName;
                                         setGravando(false);
                                         salvar.setEnabled(true);
                                         cancelar.setEnabled(true);
@@ -148,13 +143,16 @@ public class GravarAudioDialogFragment extends DialogFragment {
                             File delete = new File(outputFile);
                             if(delete.exists()){
                                 delete.delete();
+
                             }
                         }
+
 
                         @Override
                         public void onFailure(String message) {
                             super.onFailure(message);
                             Log.d("FFMPEG", message);
+
                         }
                     });
                 }catch (FFmpegCommandAlreadyRunningException e){
@@ -170,6 +168,7 @@ public class GravarAudioDialogFragment extends DialogFragment {
                     ((ObservacoesActivity) getActivity()).addObservacao(observacao);
                 }
                 recorder = null;
+
 
                 dismiss();
             }

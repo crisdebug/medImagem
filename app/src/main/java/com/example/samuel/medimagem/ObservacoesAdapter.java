@@ -1,5 +1,7 @@
 package com.example.samuel.medimagem;
 
+import android.content.Context;
+import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,13 +14,19 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+//TODO: TESTAR ADAPTER
 
 public class ObservacoesAdapter extends RecyclerView.Adapter<ObservacoesAdapter.BaseViewHolder> {
 
-    public ArrayList<Observacao> observacoes;
+    ArrayList<Observacao> observacoes;
+    private MediaPlayer player;
+    private Context context;
 
-    public ObservacoesAdapter (ArrayList<Observacao> observacoes){
+
+    ObservacoesAdapter (ArrayList<Observacao> observacoes, MediaPlayer player, Context context){
         this.observacoes = observacoes;
+        this.player = player;
+        this.context = context;
     }
 
     @NonNull
@@ -58,10 +66,10 @@ public class ObservacoesAdapter extends RecyclerView.Adapter<ObservacoesAdapter.
 
     public static abstract class BaseViewHolder<T> extends RecyclerView.ViewHolder{
 
-        public BaseViewHolder(@NonNull View itemView) {
+        BaseViewHolder(@NonNull View itemView) {
             super(itemView);
         }
-        public Observacao observacao;
+        Observacao observacao;
 
         public abstract void bind(T observacao);
     }
@@ -70,7 +78,7 @@ public class ObservacoesAdapter extends RecyclerView.Adapter<ObservacoesAdapter.
 
         private TextView conteudo;
 
-        public TextoViewHolder(@NonNull View itemView) {
+        TextoViewHolder(@NonNull View itemView) {
             super(itemView);
 
             conteudo = itemView.findViewById(R.id.content_text);
@@ -86,7 +94,7 @@ public class ObservacoesAdapter extends RecyclerView.Adapter<ObservacoesAdapter.
         private ImageView play;
         private SeekBar seekBar;
 
-        public AudioViewHolder(@NonNull View itemView) {
+        AudioViewHolder(@NonNull View itemView) {
             super(itemView);
 
             play = itemView.findViewById(R.id.play_button);
@@ -95,13 +103,49 @@ public class ObservacoesAdapter extends RecyclerView.Adapter<ObservacoesAdapter.
 
 
         @Override
-        public void bind(Observacao observacao) {
+        public void bind(final Observacao observacao) {
+            //TODO: TESTAR TOCAR AUDIO
 
+            try {
+
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            play.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(!player.isPlaying()){
+
+                        try{
+                            player.setDataSource(observacao.getConteudo());
+                            player.prepareAsync();
+                            player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                @Override
+                                public void onPrepared(MediaPlayer mp) {
+                                    mp.start();
+                                }
+                            });
+                            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                @Override
+                                public void onCompletion(MediaPlayer mp) {
+                                    mp.reset();
+                                }
+                            });
+
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+
+                    }
+
+                }
+            });
         }
     }
 
-    //TODO: ADD OBSERVACAO NA LISTA DO ADAPTER E TESTAR ADAPTER
-    public int addObservacao(Observacao observacao){
+
+    int addObservacao(Observacao observacao){
         this.observacoes.add(observacao);
         this.observacoes.trimToSize();
         for(int i = 0; i<observacoes.size(); i++)

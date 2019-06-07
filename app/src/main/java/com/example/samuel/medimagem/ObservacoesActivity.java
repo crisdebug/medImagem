@@ -1,15 +1,16 @@
 package com.example.samuel.medimagem;
 
+import android.content.Intent;
+import android.media.MediaPlayer;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
@@ -24,7 +25,7 @@ public class ObservacoesActivity extends AppCompatActivity {
     private RecyclerView listaObservacoes;
     private RecyclerView.LayoutManager layoutManager;
     private ArrayList<Observacao> observacoes;
-
+    private MediaPlayer mediaPlayer;
     private Exam exame;
     private int record_count = 0;
     private ObservacoesAdapter adapter;
@@ -42,10 +43,11 @@ public class ObservacoesActivity extends AppCompatActivity {
 
         exame = (Exam) getIntent().getSerializableExtra("exame");
         observacoes = new ArrayList<>();
+        mediaPlayer = new MediaPlayer();
 
         layoutManager = new LinearLayoutManager(this);
         listaObservacoes.setLayoutManager(layoutManager);
-        adapter = new ObservacoesAdapter(observacoes);
+        adapter = new ObservacoesAdapter(observacoes, mediaPlayer, this);
         listaObservacoes.setAdapter(adapter);
 
 
@@ -59,6 +61,7 @@ public class ObservacoesActivity extends AppCompatActivity {
                 }
                 ft.addToBackStack(null);
 
+                Log.d("DEBUG", "CONTADOR: "+record_count);
                 GravarAudioDialogFragment dialogFragment = GravarAudioDialogFragment.getInstance(exame, record_count);
 
                 dialogFragment.show(ft, "dialogAudio");

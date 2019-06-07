@@ -41,6 +41,8 @@
         android:layout_marginLeft="8dp"
         android:layout_marginTop="4dp"
         android:layout_below="@id/titulo_observacao"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
         />
 
     <SeekBar

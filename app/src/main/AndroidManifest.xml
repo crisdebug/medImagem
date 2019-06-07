@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
@@ -16,18 +17,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <service android:name=".ImagensService"
-            android:exported="false"/>
-        <activity android:name=".ObservacoesActivity"
-            android:label="Observações"
-            android:parentActivityName=".FotosActivity"></activity>
-        <activity
-            android:name=".ResumoExameActivity"
-            android:parentActivityName=".ExameActivity"></activity>
-        <activity
-            android:name=".CadastrarExameActivity"
-            android:label="Marcar Exame"
-            android:parentActivityName=".ExameActivity" />
         <activity android:name=".LoginActivity"
             >
             <intent-filter>
@@ -37,14 +26,32 @@
             </intent-filter>
         </activity>
         <activity android:name=".ExameActivity" />
-
+        <activity
+            android:name=".CadastrarExameActivity"
+            android:label="Marcar Exame"
+            android:parentActivityName=".ExameActivity" />
+        <activity
+            android:name=".ResumoExameActivity"
+            android:label="Resumo Exame"
+            android:parentActivityName=".ExameActivity"></activity>
         <activity
             android:name=".CameraActivity"
+            android:parentActivityName=".ResumoExameActivity"
             />
+
         <activity
             android:name=".FotosActivity"
             android:parentActivityName=".CameraActivity"
             android:label="Selecionar Fotos"/>
+        <activity android:name=".ObservacoesActivity"
+            android:label="Observações"
+            android:parentActivityName=".FotosActivity"
+            android:configChanges="keyboardHidden|orientation"></activity>
+
+        <service android:name=".ImagensService"
+            android:exported="false"/>
+
+
     </application>
 
 </manifest>
